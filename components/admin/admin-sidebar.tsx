@@ -1,0 +1,272 @@
+"use client"
+import {
+  BarChart3,
+  Users,
+  Store,
+  Heart,
+  GraduationCap,
+  Calendar,
+  Gift,
+  Settings,
+  ChevronDown,
+  LogOut,
+  MapPin,
+  Bell,
+  Flag,
+  Mail,
+  Home,
+  User,
+} from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
+
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarRail,
+} from "@/components/ui/sidebar"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+
+const navigationItems = [
+  {
+    title: "Dashboard",
+    url: "/admin/dashboard",
+    icon: BarChart3,
+  },
+  {
+    title: "Usuários",
+    url: "/admin/users",
+    icon: User,
+  },
+  {
+    title: "Profissionais",
+    icon: Users,
+    items: [
+      {
+        title: "Profissionais",
+        url: "/admin/professionals",
+      },
+      {
+        title: "Profissionais Indicados",
+        url: "/admin/recommended-professionals",
+      },
+      {
+        title: "Profissões",
+        url: "/admin/professions",
+      },
+      {
+        title: "Histórico de Pontos",
+        url: "/admin/point-history",
+      },
+    ],
+  },
+  {
+    title: "Parceiros",
+    icon: Store,
+    items: [
+      {
+        title: "Fornecedores",
+        url: "/admin/partner-suppliers",
+      },
+      {
+        title: "Lojas",
+        url: "/admin/stores",
+      },
+      {
+        title: "Produtos",
+        url: "/admin/products",
+      },
+    ],
+  },
+  {
+    title: "Amantes de Decoração",
+    url: "/admin/love-decorations",
+    icon: Heart,
+  },
+  {
+    title: "Eventos",
+    icon: Calendar,
+    items: [
+      {
+        title: "Eventos",
+        url: "/admin/events",
+      },
+      {
+        title: "Inscrições",
+        url: "/admin/event-registrations",
+      },
+    ],
+  },
+  {
+    title: "Workshops",
+    icon: GraduationCap,
+    items: [
+      {
+        title: "Workshops",
+        url: "/admin/workshops",
+      },
+      {
+        title: "Módulos",
+        url: "/admin/workshop-modules",
+      },
+    ],
+  },
+  {
+    title: "Comunidade",
+    icon: Home,
+    items: [
+      {
+        title: "Comunidades",
+        url: "/admin/communities",
+      },
+      {
+        title: "Posts",
+        url: "/admin/posts",
+      },
+      {
+        title: "Comentários",
+        url: "/admin/comments",
+      },
+      {
+        title: "Likes",
+        url: "/admin/likes",
+      },
+      {
+        title: "Hashtags",
+        url: "/admin/hashtags",
+      },
+    ],
+  },
+  {
+    title: "Endereços",
+    url: "/admin/addresses",
+    icon: MapPin,
+  },
+  {
+    title: "Notificações",
+    url: "/admin/notifications",
+    icon: Bell,
+  },
+  {
+    title: "Cupons",
+    url: "/admin/coupons",
+    icon: Gift,
+  },
+  {
+    title: "Denúncias",
+    url: "/admin/reports",
+    icon: Flag,
+  },
+  {
+    title: "E-mails",
+    url: "/admin/mail",
+    icon: Mail,
+  },
+  {
+    title: "Configurações",
+    url: "/admin/settings",
+    icon: Settings,
+  },
+]
+
+export function AdminSidebar() {
+  const pathname = usePathname()
+  const { logout, user } = useAuth()
+
+  return (
+    <Sidebar className="border-r border-connection-dark/20 bg-connection-primary">
+      <SidebarHeader className="border-b border-connection-dark/20 p-4">
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white">
+            <span className="text-sm font-bold text-connection-primary">UP</span>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-white">Connection</p>
+            <p className="text-xs text-connection-light/70">Admin Panel</p>
+          </div>
+        </div>
+        {user && (
+          <div className="mt-3 p-2 bg-connection-secondary/30 rounded-lg">
+            <p className="text-xs text-connection-light/70">Logado como:</p>
+            <p className="text-sm text-white font-medium truncate">{user.email}</p>
+          </div>
+        )}
+      </SidebarHeader>
+      <SidebarContent className="overflow-y-auto custom-scrollbar">
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navigationItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  {item.items ? (
+                    <Collapsible>
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton className="text-connection-light/80 hover:bg-connection-secondary hover:text-white">
+                          <item.icon className="h-4 w-4" />
+                          <span>{item.title}</span>
+                          <ChevronDown className="ml-auto h-4 w-4" />
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          {item.items.map((subItem) => (
+                            <SidebarMenuSubItem key={subItem.title}>
+                              <SidebarMenuSubButton
+                                asChild
+                                isActive={pathname === subItem.url}
+                                className="text-connection-light/70 hover:bg-connection-secondary/50 hover:text-white data-[active=true]:bg-connection-accent/70 data-[active=true]:text-white"
+                              >
+                                <Link href={subItem.url}>
+                                  <span>{subItem.title}</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ))}
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  ) : (
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.url}
+                      className="text-connection-light/80 hover:bg-connection-secondary hover:text-white data-[active=true]:bg-connection-accent data-[active=true]:text-white"
+                    >
+                      <Link href={item.url}>
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  )}
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <div className="border-t border-connection-dark/20 p-4">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={logout}
+              className="text-connection-light/80 hover:bg-connection-secondary hover:text-white cursor-pointer"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Sair</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </div>
+      <SidebarRail />
+    </Sidebar>
+  )
+}
