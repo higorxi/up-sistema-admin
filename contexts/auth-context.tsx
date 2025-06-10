@@ -82,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       setIsLoading(true)
-      const response = await fetch("http://localhost:3002/api/auth/login", {
+      const response = await fetch("https://up-backend-edeta3b3hchmgkfj.brazilsouth-01.azurewebsites.net/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

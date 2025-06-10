@@ -1,6 +1,6 @@
 // Atualizar a configuração da API para corresponder ao backend NestJS
 export const API_CONFIG = {
-  BASE_URL: "http://localhost:3002/api",
+  BASE_URL: "https://up-backend-edeta3b3hchmgkfj.brazilsouth-01.azurewebsites.net/api",
   ENDPOINTS: {
     USERS: "/users",
     PROFESSIONALS: "/professionals",
