@@ -188,6 +188,7 @@ const navigationItems = [
     title: "Configurações",
     url: "/admin/settings",
     icon: Settings,
+    disabled: true, 
   },
 ]
 
@@ -195,12 +196,13 @@ export function AdminSidebar() {
   const pathname = usePathname()
   const { logout, user } = useAuth()
 
+
   const renderMenuItem = (item: any) => {
     if (item.disabled) {
       return (
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="w-full">
+            <div className="w-full relative">
               <SidebarMenuButton
                 disabled
                 className="text-connection-light/40 cursor-not-allowed opacity-50"
@@ -236,7 +238,7 @@ export function AdminSidebar() {
       return (
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="w-full">
+            <div className="w-full relative">
               <SidebarMenuButton
                 disabled
                 className="text-connection-light/40 cursor-not-allowed opacity-50"
@@ -270,7 +272,7 @@ export function AdminSidebar() {
       return (
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="w-full">
+            <div className="w-full relative">
               <SidebarMenuSubButton
                 className="text-connection-light/40 cursor-not-allowed opacity-50"
               >
