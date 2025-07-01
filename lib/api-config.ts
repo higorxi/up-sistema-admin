@@ -1,6 +1,8 @@
+import { API_BASE_URL } from "@/utils/api"
+
 // Atualizar a configuração da API para corresponder ao backend NestJS
 export const API_CONFIG = {
-  BASE_URL: "https://up-backend-edeta3b3hchmgkfj.brazilsouth-01.azurewebsites.net/api",
+  BASE_URL: API_BASE_URL,
   ENDPOINTS: {
     USERS: "/users",
     PROFESSIONALS: "/professionals",
