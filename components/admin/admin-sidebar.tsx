@@ -307,8 +307,8 @@ export function AdminSidebar() {
               <span className="text-sm font-bold text-connection-primary">UP</span>
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">Connection</p>
-              <p className="text-xs text-connection-light/70">Admin Panel</p>
+              <p className="text-sm font-semibold text-white">UPConnection</p>
+              <p className="text-xs text-connection-light/70">Painel de Admin</p>
             </div>
           </div>
           {user && (

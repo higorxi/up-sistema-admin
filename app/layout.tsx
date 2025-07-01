@@ -9,7 +9,7 @@ import { AuthProviderWrapper } from "@/components/providers/auth-provider-wrappe
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Admin Panel - Connection",
+  title: "Admin Painel - UPConnection",
   description: "Sistema de administração",
 }
 
