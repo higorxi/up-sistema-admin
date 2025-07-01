@@ -4,6 +4,7 @@ import type React from "react"
 import { createContext, useContext, useState, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
+import { API_BASE_URL } from "@/utils/api"
 
 interface User {
   id: string
@@ -82,7 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       setIsLoading(true)
-      const response = await fetch("https://up-backend-edeta3b3hchmgkfj.brazilsouth-01.azurewebsites.net/api/auth/login", {
+      const response = await fetch(`${API_BASE_URL + '/auth/login'}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
