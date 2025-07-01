@@ -80,7 +80,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isAuthenticated, isLoading, pathname, router])
 
+  const allowedAdmins = [
+    "roferrazdesigner@gmail.com",
+    "meiresug@gmail.com",
+    "victoorres@icloud.com",
+  ]
+  
+  const MAX_ATTEMPTS = 3
+  
   const login = async (email: string, password: string): Promise<boolean> => {
+    // Ler o contador de tentativas do localStorage ou zerar
+    let attempts = Number(localStorage.getItem("loginAttempts") || "0")
+  
+    if (!allowedAdmins.includes(email)) {
+      attempts++
+      localStorage.setItem("loginAttempts", attempts.toString())
+  
+      if (attempts >= MAX_ATTEMPTS) {
+        toast({
+          title: "Acesso negado",
+          description: "Você não tem permissão para acessar. Apenas administradores.",
+          variant: "destructive",
+        })
+        setIsLoading(false)
+        return false
+      } else {
+        toast({
+          title: "Acesso negado",
+          description: 'Usuário não encontrado ou sem permissão de acesso.',
+          variant: "destructive",
+        })
+        setIsLoading(false)
+        return false
+      }
+    }
+  
+    // Se chegou aqui, email está autorizado, resetar tentativas
+    localStorage.removeItem("loginAttempts")
+  
     try {
       setIsLoading(true)
       const response = await fetch(`${API_BASE_URL + '/auth/login'}`, {
@@ -90,25 +127,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
         body: JSON.stringify({ email, password }),
       })
-
+  
       if (response.ok) {
         const data = await response.json()
-
+  
         // Armazenar dados no localStorage
         localStorage.setItem("token", data.access_token)
         localStorage.setItem("user", JSON.stringify(data.user))
         localStorage.setItem("role", data.role)
-
+  
         // Atualizar estado
         setToken(data.access_token)
         setUser(data.user)
         setRole(data.role)
-
+  
         toast({
           title: "Login realizado com sucesso",
           description: `Bem-vindo, ${data.user.email}!`,
         })
-
+  
         return true
       } else {
         const errorData = await response.json()
