@@ -136,7 +136,7 @@ const navigationItems = [
       {
         title: "Comunidades",
         url: "/admin/communities",
-        disabled: true, 
+        disabled: false, 
       },
       {
         title: "Posts",
