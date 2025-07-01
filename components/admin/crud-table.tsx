@@ -416,14 +416,6 @@ export function CrudTable({ config }: CrudTableProps) {
             </div>
             <div className="flex gap-2">
               <Button
-                variant="outline"
-                onClick={exportData}
-                className="border-connection-light/20 text-connection-light hover:bg-connection-secondary hover:text-white"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Exportar
-              </Button>
-              <Button
                 onClick={() => setIsFormOpen(true)}
                 className="bg-connection-accent hover:bg-connection-accent/80"
               >
