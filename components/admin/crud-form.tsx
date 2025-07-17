@@ -1,55 +1,77 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
-import { CalendarIcon, Loader2, Search, X } from "lucide-react"
-import { cn } from "@/lib/utils"
-import type { CrudConfig, FieldConfig } from "@/lib/crud-config"
-import { useToast } from "@/hooks/use-toast"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { CalendarIcon, Loader2, Search, X } from "lucide-react";
+import { cn, flattenFormData, transformFormData } from "@/lib/utils";
+import type { CrudConfig, FieldConfig } from "@/lib/crud-config";
+import { useToast } from "@/hooks/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface CrudFormProps {
-  config: CrudConfig
-  initialData?: any
-  onSuccess: () => void
-  onCancel: () => void
+  config: CrudConfig;
+  initialData?: any;
+  onSuccess: () => void;
+  onCancel: () => void;
 }
 
-export function CrudForm({ config, initialData, onSuccess, onCancel }: CrudFormProps) {
-  const [formData, setFormData] = useState<any>({})
-  const [loading, setLoading] = useState(false)
-  const [relationData, setRelationData] = useState<Record<string, any[]>>({})
-  const [relationLoading, setRelationLoading] = useState<Record<string, boolean>>({})
-  const [relationSearch, setRelationSearch] = useState<Record<string, string>>({})
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [touched, setTouched] = useState<Record<string, boolean>>({})
-  const [activeTab, setActiveTab] = useState("general")
-  const { toast } = useToast()
+export function CrudForm({
+  config,
+  initialData,
+  onSuccess,
+  onCancel,
+}: CrudFormProps) {
+  const [formData, setFormData] = useState<any>({});
+  const [loading, setLoading] = useState(false);
+  const [relationData, setRelationData] = useState<Record<string, any[]>>({});
+  const [relationLoading, setRelationLoading] = useState<
+    Record<string, boolean>
+  >({});
+  const [relationSearch, setRelationSearch] = useState<Record<string, string>>(
+    {}
+  );
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [activeTab, setActiveTab] = useState("general");
+  const { toast } = useToast();
 
   // Agrupar campos em abas para formulários grandes
-  const fieldGroups = config.fields.reduce((groups: Record<string, FieldConfig[]>, field) => {
-    const group = (field as any).group || "general"
-    if (!groups[group]) {
-      groups[group] = []
-    }
-    groups[group].push(field)
-    return groups
-  }, {})
+  const fieldGroups = config.fields.reduce(
+    (groups: Record<string, FieldConfig[]>, field) => {
+      const group = (field as any).group || "general";
+      if (!groups[group]) {
+        groups[group] = [];
+      }
+      groups[group].push(field);
+      return groups;
+    },
+    {}
+  );
 
   if (!fieldGroups.general) {
-    fieldGroups.general = []
+    fieldGroups.general = [];
   }
 
   const tabNames: Record<string, string> = {
@@ -59,128 +81,164 @@ export function CrudForm({ config, initialData, onSuccess, onCancel }: CrudFormP
     social: "Redes Sociais",
     details: "Detalhes",
     settings: "Configurações",
-  }
+  };
 
   useEffect(() => {
     if (initialData) {
-      setFormData(initialData)
+      setFormData(initialData);
     } else {
-      const defaultData: any = {}
+      const defaultData: any = {};
       config.fields.forEach((field) => {
         if (field.type === "boolean") {
-          defaultData[field.key] = field.defaultValue !== undefined ? field.defaultValue : false
+          defaultData[field.key] =
+            field.defaultValue !== undefined ? field.defaultValue : false;
         } else if (field.defaultValue !== undefined) {
-          defaultData[field.key] = field.defaultValue
+          defaultData[field.key] = field.defaultValue;
         } else {
-          defaultData[field.key] = ""
+          defaultData[field.key] = "";
         }
-      })
-      setFormData(defaultData)
+      });
+      setFormData(defaultData);
     }
-  }, [initialData, config.fields])
+  }, [initialData, config.fields]);
 
   useEffect(() => {
     const loadRelationData = async () => {
-      const relationFields = config.fields.filter((field) => field.type === "relation")
+      const relationFields = config.fields.filter(
+        (field) => field.type === "relation"
+      );
 
       for (const field of relationFields) {
         if (field.relationConfig?.endpoint) {
           try {
-            setRelationLoading((prev) => ({ ...prev, [field.key]: true }))
+            setRelationLoading((prev) => ({ ...prev, [field.key]: true }));
             const response = await fetch(field.relationConfig.endpoint, {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
                 "Content-Type": "application/json",
               },
-            })
+            });
             if (response.ok) {
-              const data = await response.json()
+              const data = await response.json();
               setRelationData((prev) => ({
                 ...prev,
                 [field.key]: data,
-              }))
+              }));
             }
           } catch (error) {
-            console.error(`Erro ao carregar dados de relação para ${field.key}:`, error)
+            console.error(
+              `Erro ao carregar dados de relação para ${field.key}:`,
+              error
+            );
           } finally {
-            setRelationLoading((prev) => ({ ...prev, [field.key]: false }))
+            setRelationLoading((prev) => ({ ...prev, [field.key]: false }));
           }
         }
       }
-    }
+    };
 
-    loadRelationData()
-  }, [config.fields])
+    loadRelationData();
+  }, [config.fields]);
 
   const validateField = (field: FieldConfig, value: any): string => {
-    if (field.required && (value === undefined || value === null || value === "")) {
-      return `${field.label} é obrigatório`
+    if (
+      field.required &&
+      (value === undefined || value === null || value === "")
+    ) {
+      return `${field.label} é obrigatório`;
     }
 
     if (field.validation) {
       if (field.validation.pattern && value) {
-        const regex = new RegExp(field.validation.pattern)
+        const regex = new RegExp(field.validation.pattern);
         if (!regex.test(value)) {
-          return field.validation.message || `${field.label} está em formato inválido`
+          return (
+            field.validation.message ||
+            `${field.label} está em formato inválido`
+          );
         }
       }
 
       if (field.type === "number" || field.type === "currency") {
-        const numValue = Number(value)
-        if (field.validation.min !== undefined && numValue < field.validation.min) {
-          return `${field.label} deve ser maior ou igual a ${field.validation.min}`
+        const numValue = Number(value);
+        if (
+          field.validation.min !== undefined &&
+          numValue < field.validation.min
+        ) {
+          return `${field.label} deve ser maior ou igual a ${field.validation.min}`;
         }
-        if (field.validation.max !== undefined && numValue > field.validation.max) {
-          return `${field.label} deve ser menor ou igual a ${field.validation.max}`
+        if (
+          field.validation.max !== undefined &&
+          numValue > field.validation.max
+        ) {
+          return `${field.label} deve ser menor ou igual a ${field.validation.max}`;
         }
       }
 
-      if ((field.type === "text" || field.type === "textarea") && typeof value === "string") {
-        if (field.validation.minLength !== undefined && value.length < field.validation.minLength) {
-          return `${field.label} deve ter pelo menos ${field.validation.minLength} caracteres`
+      if (
+        (field.type === "text" || field.type === "textarea") &&
+        typeof value === "string"
+      ) {
+        if (
+          field.validation.minLength !== undefined &&
+          value.length < field.validation.minLength
+        ) {
+          return `${field.label} deve ter pelo menos ${field.validation.minLength} caracteres`;
         }
-        if (field.validation.maxLength !== undefined && value.length > field.validation.maxLength) {
-          return `${field.label} deve ter no máximo ${field.validation.maxLength} caracteres`
+        if (
+          field.validation.maxLength !== undefined &&
+          value.length > field.validation.maxLength
+        ) {
+          return `${field.label} deve ter no máximo ${field.validation.maxLength} caracteres`;
         }
       }
     }
 
-    return ""
-  }
+    return "";
+  };
 
   const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {}
-    let isValid = true
+    const newErrors: Record<string, string> = {};
+    let isValid = true;
 
     config.fields.forEach((field) => {
-      const error = validateField(field, formData[field.key])
+      const error = validateField(field, formData[field.key]);
       if (error) {
-        newErrors[field.key] = error
-        isValid = false
+        newErrors[field.key] = error;
+        isValid = false;
       }
-    })
+    });
 
-    setErrors(newErrors)
-    return isValid
-  }
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!validateForm()) {
       toast({
         title: "Erro de validação",
         description: "Por favor, corrija os erros no formulário",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     try {
-      const url = initialData ? `${config.endpoint}/${initialData.id}` : config.endpoint
-      const method = initialData ? "PATCH" : "POST"
+      const url = initialData
+        ? `${config.endpoint}/${initialData.id}`
+        : config.endpoint;
+      const method = initialData ? "PATCH" : "POST";
+
+      // Transformar os dados antes de enviar
+      const transformedData = transformFormData(formData);
+
+      // Log para debug (remova em produção)
+      console.log("Dados originais:", formData);
+      console.log("Dados transformados:", transformedData);
 
       const response = await fetch(url, {
         method,
@@ -188,74 +246,103 @@ export function CrudForm({ config, initialData, onSuccess, onCancel }: CrudFormP
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify(formData),
-      })
+        body: JSON.stringify(transformedData),
+      });
 
       if (response.ok) {
-        onSuccess()
+        onSuccess();
       } else {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Erro ao salvar")
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erro ao salvar");
       }
     } catch (error) {
       toast({
         title: "Erro",
-        description: error instanceof Error ? error.message : "Erro ao salvar item",
+        description:
+          error instanceof Error ? error.message : "Erro ao salvar item",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+
+  useEffect(() => {
+    if (initialData) {
+      // Transformar dados aninhados em campos com notação de ponto para o formulário
+      const flattenedData = flattenFormData(initialData);
+      setFormData(flattenedData);
+    } else {
+      const defaultData: any = {};
+      config.fields.forEach((field) => {
+        if (field.type === "boolean") {
+          defaultData[field.key] =
+            field.defaultValue !== undefined ? field.defaultValue : false;
+        } else if (field.defaultValue !== undefined) {
+          defaultData[field.key] = field.defaultValue;
+        } else {
+          defaultData[field.key] = "";
+        }
+      });
+      setFormData(defaultData);
+    }
+  }, [initialData, config.fields]);
 
   const handleBlur = (field: FieldConfig) => {
-    setTouched((prev) => ({ ...prev, [field.key]: true }))
-    const error = validateField(field, formData[field.key])
-    setErrors((prev) => ({ ...prev, [field.key]: error }))
-  }
+    setTouched((prev) => ({ ...prev, [field.key]: true }));
+    const error = validateField(field, formData[field.key]);
+    setErrors((prev) => ({ ...prev, [field.key]: error }));
+  };
 
-  const handleRelationSearch = async (field: FieldConfig, searchTerm: string) => {
-    if (!field.relationConfig?.endpoint || !field.relationConfig.searchFields) return
+  const handleRelationSearch = async (
+    field: FieldConfig,
+    searchTerm: string
+  ) => {
+    if (!field.relationConfig?.endpoint || !field.relationConfig.searchFields)
+      return;
 
-    setRelationSearch((prev) => ({ ...prev, [field.key]: searchTerm }))
+    setRelationSearch((prev) => ({ ...prev, [field.key]: searchTerm }));
 
-    if (searchTerm.length < 2) return
+    if (searchTerm.length < 2) return;
 
     try {
-      setRelationLoading((prev) => ({ ...prev, [field.key]: true }))
+      setRelationLoading((prev) => ({ ...prev, [field.key]: true }));
 
-      const queryParams = new URLSearchParams()
-      queryParams.append("search", searchTerm)
+      const queryParams = new URLSearchParams();
+      queryParams.append("search", searchTerm);
 
       field.relationConfig.searchFields.forEach((searchField) => {
-        queryParams.append("searchFields", searchField)
-      })
+        queryParams.append("searchFields", searchField);
+      });
 
-      const url = `${field.relationConfig.endpoint}?${queryParams.toString()}`
+      const url = `${field.relationConfig.endpoint}?${queryParams.toString()}`;
       const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "application/json",
         },
-      })
+      });
 
       if (response.ok) {
-        const data = await response.json()
+        const data = await response.json();
         setRelationData((prev) => ({
           ...prev,
           [field.key]: data,
-        }))
+        }));
       }
     } catch (error) {
-      console.error(`Erro ao buscar dados de relação para ${field.key}:`, error)
+      console.error(
+        `Erro ao buscar dados de relação para ${field.key}:`,
+        error
+      );
     } finally {
-      setRelationLoading((prev) => ({ ...prev, [field.key]: false }))
+      setRelationLoading((prev) => ({ ...prev, [field.key]: false }));
     }
-  }
+  };
 
   const renderField = (field: FieldConfig) => {
-    const value = formData[field.key] || ""
-    const fieldError = touched[field.key] && errors[field.key]
+    const value = formData[field.key] || "";
+    const fieldError = touched[field.key] && errors[field.key];
 
     switch (field.type) {
       case "textarea":
@@ -268,16 +355,22 @@ export function CrudForm({ config, initialData, onSuccess, onCancel }: CrudFormP
             <Textarea
               id={field.key}
               value={value}
-              onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, [field.key]: e.target.value })
+              }
               onBlur={() => handleBlur(field)}
               className="bg-connection-primary/30 border-connection-primary/50 text-white"
               placeholder={field.placeholder}
               rows={4}
             />
             {fieldError && <p className="text-red-400 text-sm">{fieldError}</p>}
-            {field.description && <p className="text-connection-light/50 text-xs">{field.description}</p>}
+            {field.description && (
+              <p className="text-connection-light/50 text-xs">
+                {field.description}
+              </p>
+            )}
           </div>
-        )
+        );
 
       case "boolean":
         return (
@@ -287,15 +380,21 @@ export function CrudForm({ config, initialData, onSuccess, onCancel }: CrudFormP
                 {field.label}
                 {field.required && <span className="text-red-400 ml-1">*</span>}
               </Label>
-              {field.description && <p className="text-connection-light/50 text-xs">{field.description}</p>}
+              {field.description && (
+                <p className="text-connection-light/50 text-xs">
+                  {field.description}
+                </p>
+              )}
             </div>
             <Switch
               id={field.key}
               checked={value}
-              onCheckedChange={(checked) => setFormData({ ...formData, [field.key]: checked })}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, [field.key]: checked })
+              }
             />
           </div>
-        )
+        );
 
       case "select":
         return (
@@ -306,23 +405,35 @@ export function CrudForm({ config, initialData, onSuccess, onCancel }: CrudFormP
             </Label>
             <Select
               value={value.toString()}
-              onValueChange={(newValue) => setFormData({ ...formData, [field.key]: newValue })}
+              onValueChange={(newValue) =>
+                setFormData({ ...formData, [field.key]: newValue })
+              }
             >
               <SelectTrigger className="bg-connection-primary/30 border-connection-primary/50 text-white">
-                <SelectValue placeholder={field.placeholder || "Selecione..."} />
+                <SelectValue
+                  placeholder={field.placeholder || "Selecione..."}
+                />
               </SelectTrigger>
               <SelectContent className="bg-connection-dark border-connection-primary/50">
                 {field.options?.map((option) => (
-                  <SelectItem key={option.value} value={option.value} className="text-white">
+                  <SelectItem
+                    key={option.value}
+                    value={option.value}
+                    className="text-white"
+                  >
                     {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             {fieldError && <p className="text-red-400 text-sm">{fieldError}</p>}
-            {field.description && <p className="text-connection-light/50 text-xs">{field.description}</p>}
+            {field.description && (
+              <p className="text-connection-light/50 text-xs">
+                {field.description}
+              </p>
+            )}
           </div>
-        )
+        );
 
       case "date":
         return (
@@ -337,32 +448,43 @@ export function CrudForm({ config, initialData, onSuccess, onCancel }: CrudFormP
                   variant="outline"
                   className={cn(
                     "w-full justify-start text-left font-normal bg-connection-primary/30 border-connection-primary/50 text-white",
-                    !value && "text-connection-light/50",
+                    !value && "text-connection-light/50"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {value ? format(new Date(value), "PPP", { locale: ptBR }) : field.placeholder || "Selecione uma data"}
+                  {value
+                    ? format(new Date(value), "PPP", { locale: ptBR })
+                    : field.placeholder || "Selecione uma data"}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-connection-dark border-connection-primary/50">
                 <Calendar
                   mode="single"
                   selected={value ? new Date(value) : undefined}
-                  onSelect={(date) => setFormData({ ...formData, [field.key]: date?.toISOString() })}
+                  onSelect={(date) =>
+                    setFormData({
+                      ...formData,
+                      [field.key]: date?.toISOString(),
+                    })
+                  }
                   initialFocus
                   locale={ptBR}
                 />
               </PopoverContent>
             </Popover>
             {fieldError && <p className="text-red-400 text-sm">{fieldError}</p>}
-            {field.description && <p className="text-connection-light/50 text-xs">{field.description}</p>}
+            {field.description && (
+              <p className="text-connection-light/50 text-xs">
+                {field.description}
+              </p>
+            )}
           </div>
-        )
+        );
 
       case "relation":
-        const relationOptions = relationData[field.key] || []
-        const isLoading = relationLoading[field.key]
-        const searchTerm = relationSearch[field.key] || ""
+        const relationOptions = relationData[field.key] || [];
+        const isLoading = relationLoading[field.key];
+        const searchTerm = relationSearch[field.key] || "";
 
         return (
           <div className="space-y-2">
@@ -384,7 +506,7 @@ export function CrudForm({ config, initialData, onSuccess, onCancel }: CrudFormP
                 <X
                   className="absolute right-2 top-2.5 h-4 w-4 cursor-pointer text-connection-light/50"
                   onClick={() => {
-                    setRelationSearch((prev) => ({ ...prev, [field.key]: "" }))
+                    setRelationSearch((prev) => ({ ...prev, [field.key]: "" }));
                   }}
                 />
               ) : (
@@ -402,13 +524,15 @@ export function CrudForm({ config, initialData, onSuccess, onCancel }: CrudFormP
                     key={option[field.relationConfig?.valueField || "id"]}
                     className={cn(
                       "p-2 cursor-pointer hover:bg-connection-secondary/50",
-                      value === option[field.relationConfig?.valueField || "id"] &&
-                        "bg-connection-accent/50 text-white",
+                      value ===
+                        option[field.relationConfig?.valueField || "id"] &&
+                        "bg-connection-accent/50 text-white"
                     )}
                     onClick={() =>
                       setFormData({
                         ...formData,
-                        [field.key]: option[field.relationConfig?.valueField || "id"],
+                        [field.key]:
+                          option[field.relationConfig?.valueField || "id"],
                       })
                     }
                   >
@@ -418,21 +542,30 @@ export function CrudForm({ config, initialData, onSuccess, onCancel }: CrudFormP
               )}
             </div>
             {fieldError && <p className="text-red-400 text-sm">{fieldError}</p>}
-            {field.description && <p className="text-connection-light/50 text-xs">{field.description}</p>}
+            {field.description && (
+              <p className="text-connection-light/50 text-xs">
+                {field.description}
+              </p>
+            )}
           </div>
-        )
+        );
 
       case "object":
-        if (!field.fields) return null
+        if (!field.fields) return null;
         return (
           <div className="space-y-4 border border-connection-primary/50 p-4 rounded-md">
             <h3 className="text-connection-light font-medium">{field.label}</h3>
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
               {field.fields.map((subField) => (
                 <div key={subField.key} className="space-y-2">
-                  <Label htmlFor={`${field.key}.${subField.key}`} className="text-connection-light">
+                  <Label
+                    htmlFor={`${field.key}.${subField.key}`}
+                    className="text-connection-light"
+                  >
                     {subField.label}
-                    {subField.required && <span className="text-red-400 ml-1">*</span>}
+                    {subField.required && (
+                      <span className="text-red-400 ml-1">*</span>
+                    )}
                   </Label>
                   <Input
                     id={`${field.key}.${subField.key}`}
@@ -454,7 +587,7 @@ export function CrudForm({ config, initialData, onSuccess, onCancel }: CrudFormP
               ))}
             </div>
           </div>
-        )
+        );
 
       default:
         return (
@@ -466,33 +599,47 @@ export function CrudForm({ config, initialData, onSuccess, onCancel }: CrudFormP
             <Input
               id={field.key}
               type={
-                field.type === "phone" || field.type === "cpf" || field.type === "cnpj" || field.type === "cep"
+                field.type === "phone" ||
+                field.type === "cpf" ||
+                field.type === "cnpj" ||
+                field.type === "cep"
                   ? "text"
                   : field.type
               }
               value={value}
-              onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, [field.key]: e.target.value })
+              }
               onBlur={() => handleBlur(field)}
               className="bg-connection-primary/30 border-connection-primary/50 text-white"
               placeholder={field.placeholder}
               required={field.required}
             />
             {fieldError && <p className="text-red-400 text-sm">{fieldError}</p>}
-            {field.description && <p className="text-connection-light/50 text-xs">{field.description}</p>}
+            {field.description && (
+              <p className="text-connection-light/50 text-xs">
+                {field.description}
+              </p>
+            )}
           </div>
-        )
+        );
     }
-  }
+  };
 
   // Verificar se precisamos de abas (mais de um grupo ou muitos campos)
-  const needsTabs = Object.keys(fieldGroups).length > 1 || config.fields.length > 6
+  const needsTabs =
+    Object.keys(fieldGroups).length > 1 || config.fields.length > 6;
 
   return (
     <form onSubmit={handleSubmit}>
       <ScrollArea className="max-h-[60vh] overflow-y-auto pr-4">
         <div className="p-1">
           {needsTabs ? (
-            <Tabs defaultValue="general" value={activeTab} onValueChange={setActiveTab}>
+            <Tabs
+              defaultValue="general"
+              value={activeTab}
+              onValueChange={setActiveTab}
+            >
               <TabsList className="bg-connection-primary/30 mb-4">
                 {Object.keys(fieldGroups).map((group) => (
                   <TabsTrigger
@@ -511,9 +658,13 @@ export function CrudForm({ config, initialData, onSuccess, onCancel }: CrudFormP
                       <div
                         key={field.key}
                         className={cn(
-                          field.width === "full" ? "col-span-1 md:col-span-2" : "",
+                          field.width === "full"
+                            ? "col-span-1 md:col-span-2"
+                            : "",
                           field.width === "half" ? "col-span-1" : "",
-                          field.width === "third" ? "col-span-1 md:col-span-1" : "",
+                          field.width === "third"
+                            ? "col-span-1 md:col-span-1"
+                            : ""
                         )}
                       >
                         {renderField(field)}
@@ -531,7 +682,7 @@ export function CrudForm({ config, initialData, onSuccess, onCancel }: CrudFormP
                   className={cn(
                     field.width === "full" ? "col-span-1 md:col-span-2" : "",
                     field.width === "half" ? "col-span-1" : "",
-                    field.width === "third" ? "col-span-1 md:col-span-1" : "",
+                    field.width === "third" ? "col-span-1 md:col-span-1" : ""
                   )}
                 >
                   {renderField(field)}
@@ -551,7 +702,11 @@ export function CrudForm({ config, initialData, onSuccess, onCancel }: CrudFormP
         >
           Cancelar
         </Button>
-        <Button type="submit" disabled={loading} className="bg-connection-accent hover:bg-connection-accent/80">
+        <Button
+          type="submit"
+          disabled={loading}
+          className="bg-connection-accent hover:bg-connection-accent/80"
+        >
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -563,5 +718,5 @@ export function CrudForm({ config, initialData, onSuccess, onCancel }: CrudFormP
         </Button>
       </div>
     </form>
-  )
+  );
 }

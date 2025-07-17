@@ -1,25 +1,25 @@
-import type { CrudConfig } from "./crud-config"
-import { API_CONFIG, buildApiUrl } from "./api-config"
+import type { CrudConfig } from "./crud-config";
+import { API_CONFIG, buildApiUrl } from "./api-config";
 
 export interface ModuleAction {
-  name: string
-  endpoint: string
-  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH"
-  requiresConfirmation?: boolean
-  confirmationMessage?: string
-  requiresSelection?: boolean
-  requiresForm?: boolean
-  formFields?: any[]
-  icon?: string
-  successMessage?: string
-  errorMessage?: string
+  name: string;
+  endpoint: string;
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  requiresConfirmation?: boolean;
+  confirmationMessage?: string;
+  requiresSelection?: boolean;
+  requiresForm?: boolean;
+  formFields?: any[];
+  icon?: string;
+  successMessage?: string;
+  errorMessage?: string;
 }
 
 export interface ModuleConfig {
-  name: string
-  path: string
-  crudConfig: CrudConfig
-  actions?: ModuleAction[]
+  name: string;
+  path: string;
+  crudConfig: CrudConfig;
+  actions?: ModuleAction[];
 }
 
 export const moduleConfigs: Record<string, ModuleConfig> = {
@@ -62,13 +62,51 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           type: "object",
           width: "full",
           fields: [
-            { key: "state", label: "Estado", type: "text", required: true, placeholder: "Ex: SP" },
-            { key: "city", label: "Cidade", type: "text", required: true, placeholder: "Ex: São Paulo" },
-            { key: "district", label: "Bairro", type: "text", required: true, placeholder: "Ex: Centro" },
-            { key: "street", label: "Rua", type: "text", placeholder: "Nome da rua" },
-            { key: "number", label: "Número", type: "text", placeholder: "123" },
-            { key: "complement", label: "Complemento", type: "text", placeholder: "Apto 45" },
-            { key: "zipCode", label: "CEP", type: "text", placeholder: "00000-000" },
+            {
+              key: "state",
+              label: "Estado",
+              type: "text",
+              required: true,
+              placeholder: "Ex: SP",
+            },
+            {
+              key: "city",
+              label: "Cidade",
+              type: "text",
+              required: true,
+              placeholder: "Ex: São Paulo",
+            },
+            {
+              key: "district",
+              label: "Bairro",
+              type: "text",
+              required: true,
+              placeholder: "Ex: Centro",
+            },
+            {
+              key: "street",
+              label: "Rua",
+              type: "text",
+              placeholder: "Nome da rua",
+            },
+            {
+              key: "number",
+              label: "Número",
+              type: "text",
+              placeholder: "123",
+            },
+            {
+              key: "complement",
+              label: "Complemento",
+              type: "text",
+              placeholder: "Apto 45",
+            },
+            {
+              key: "zipCode",
+              label: "CEP",
+              type: "text",
+              placeholder: "00000-000",
+            },
           ],
         },
       ],
@@ -122,11 +160,19 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     actions: [
       {
         name: "Atualizar Foto de Perfil",
-        endpoint: buildApiUrl(`${API_CONFIG.ENDPOINTS.USERS}/{id}/profile-image`),
+        endpoint: buildApiUrl(
+          `${API_CONFIG.ENDPOINTS.USERS}/{id}/profile-image`
+        ),
         method: "PATCH",
         requiresForm: true,
         formFields: [
-          { key: "profileImage", label: "URL da Imagem", type: "text", required: true, placeholder: "https://..." },
+          {
+            key: "profileImage",
+            label: "URL da Imagem",
+            type: "text",
+            required: true,
+            placeholder: "https://...",
+          },
         ],
         successMessage: "Foto de perfil atualizada com sucesso",
         errorMessage: "Erro ao atualizar foto de perfil",
@@ -145,8 +191,21 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       searchFields: ["name", "document", "phone"],
       defaultSort: { field: "name", direction: "asc" },
       fields: [
-        { key: "name", label: "Nome", type: "text", required: true, placeholder: "Nome completo", width: "half" },
-        { key: "document", label: "CPF/CNPJ", type: "text", placeholder: "000.000.000-00", width: "half" },
+        {
+          key: "name",
+          label: "Nome",
+          type: "text",
+          required: true,
+          placeholder: "Nome completo",
+          width: "half",
+        },
+        {
+          key: "document",
+          label: "CPF/CNPJ",
+          type: "text",
+          placeholder: "000.000.000-00",
+          width: "half",
+        },
         {
           key: "phone",
           label: "Telefone",
@@ -190,8 +249,20 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           placeholder: "Nome do escritório",
           width: "half",
         },
-        { key: "verified", label: "Verificado", type: "boolean", defaultValue: false, width: "third" },
-        { key: "featured", label: "Destaque", type: "boolean", defaultValue: false, width: "third" },
+        {
+          key: "verified",
+          label: "Verificado",
+          type: "boolean",
+          defaultValue: false,
+          width: "third",
+        },
+        {
+          key: "featured",
+          label: "Destaque",
+          type: "boolean",
+          defaultValue: false,
+          width: "third",
+        },
         {
           key: "level",
           label: "Nível",
@@ -228,8 +299,14 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           sortable: true,
           filterable: true,
           badgeConfig: {
-            trueValue: { label: "Verificado", className: "bg-green-100 text-green-800" },
-            falseValue: { label: "Não Verificado", className: "bg-gray-100 text-gray-800" },
+            trueValue: {
+              label: "Verificado",
+              className: "bg-green-100 text-green-800",
+            },
+            falseValue: {
+              label: "Não Verificado",
+              className: "bg-gray-100 text-gray-800",
+            },
           },
         },
         { key: "points", label: "Pontos", sortable: true },
@@ -256,7 +333,9 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     actions: [
       {
         name: "Adicionar Pontos",
-        endpoint: buildApiUrl(`${API_CONFIG.ENDPOINTS.PROFESSIONALS}/{id}/add-points`),
+        endpoint: buildApiUrl(
+          `${API_CONFIG.ENDPOINTS.PROFESSIONALS}/{id}/add-points`
+        ),
         method: "POST",
         requiresForm: true,
         formFields: [
@@ -269,10 +348,13 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       },
       {
         name: "Verificar Profissional",
-        endpoint: buildApiUrl(`${API_CONFIG.ENDPOINTS.PROFESSIONALS}/{id}/verify`),
+        endpoint: buildApiUrl(
+          `${API_CONFIG.ENDPOINTS.PROFESSIONALS}/{id}/verify`
+        ),
         method: "POST",
         requiresConfirmation: true,
-        confirmationMessage: "Tem certeza que deseja verificar este profissional?",
+        confirmationMessage:
+          "Tem certeza que deseja verificar este profissional?",
         successMessage: "Profissional verificado com sucesso",
         errorMessage: "Erro ao verificar profissional",
         icon: "CheckCircle",
@@ -321,8 +403,20 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           placeholder: "Inscrição estadual",
           width: "half",
         },
-        { key: "contact", label: "Contato", type: "phone", placeholder: "(00) 00000-0000", width: "half" },
-        { key: "accessPending", label: "Acesso Pendente", type: "boolean", defaultValue: true, width: "half" },
+        {
+          key: "contact",
+          label: "Contato",
+          type: "phone",
+          placeholder: "(00) 00000-0000",
+          width: "half",
+        },
+        {
+          key: "accessPending",
+          label: "Acesso Pendente",
+          type: "boolean",
+          defaultValue: true,
+          width: "half",
+        },
       ],
       tableColumns: [
         { key: "tradeName", label: "Fornecedor", sortable: true },
@@ -336,8 +430,14 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           sortable: true,
           filterable: true,
           badgeConfig: {
-            trueValue: { label: "Pendente", className: "bg-yellow-100 text-yellow-800" },
-            falseValue: { label: "Liberado", className: "bg-green-100 text-green-800" },
+            trueValue: {
+              label: "Pendente",
+              className: "bg-yellow-100 text-yellow-800",
+            },
+            falseValue: {
+              label: "Liberado",
+              className: "bg-green-100 text-green-800",
+            },
           },
         },
       ],
@@ -352,7 +452,9 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     actions: [
       {
         name: "Aprovar Acesso",
-        endpoint: buildApiUrl(`${API_CONFIG.ENDPOINTS.PARTNER_SUPPLIERS}/pending/{id}`),
+        endpoint: buildApiUrl(
+          `${API_CONFIG.ENDPOINTS.PARTNER_SUPPLIERS}/pending/{id}`
+        ),
         method: "PUT",
         requiresConfirmation: true,
         confirmationMessage: "Aprovar acesso para este fornecedor?",
@@ -373,13 +475,58 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       searchFields: ["street", "city", "state", "district"],
       defaultSort: { field: "city", direction: "asc" },
       fields: [
-        { key: "state", label: "Estado", type: "text", required: true, placeholder: "Ex: SP", width: "third" },
-        { key: "city", label: "Cidade", type: "text", required: true, placeholder: "Ex: São Paulo", width: "third" },
-        { key: "district", label: "Bairro", type: "text", required: true, placeholder: "Ex: Centro", width: "third" },
-        { key: "street", label: "Rua", type: "text", placeholder: "Nome da rua", width: "half" },
-        { key: "number", label: "Número", type: "text", placeholder: "123", width: "third" },
-        { key: "complement", label: "Complemento", type: "text", placeholder: "Apto 45", width: "third" },
-        { key: "zipCode", label: "CEP", type: "cep", placeholder: "00000-000", width: "third" },
+        {
+          key: "state",
+          label: "Estado",
+          type: "text",
+          required: true,
+          placeholder: "Ex: SP",
+          width: "third",
+        },
+        {
+          key: "city",
+          label: "Cidade",
+          type: "text",
+          required: true,
+          placeholder: "Ex: São Paulo",
+          width: "third",
+        },
+        {
+          key: "district",
+          label: "Bairro",
+          type: "text",
+          required: true,
+          placeholder: "Ex: Centro",
+          width: "third",
+        },
+        {
+          key: "street",
+          label: "Rua",
+          type: "text",
+          placeholder: "Nome da rua",
+          width: "half",
+        },
+        {
+          key: "number",
+          label: "Número",
+          type: "text",
+          placeholder: "123",
+          width: "third",
+        },
+        {
+          key: "complement",
+          label: "Complemento",
+          type: "text",
+          placeholder: "Apto 45",
+          width: "third",
+        },
+        {
+          key: "zipCode",
+          label: "CEP",
+          type: "cep",
+          placeholder: "00000-000",
+          width: "third",
+        },
       ],
       tableColumns: [
         { key: "street", label: "Rua", sortable: true },
@@ -412,9 +559,28 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       searchFields: ["name", "description"],
       defaultSort: { field: "name", direction: "asc" },
       fields: [
-        { key: "name", label: "Nome", type: "text", required: true, placeholder: "Nome da loja", width: "half" },
-        { key: "description", label: "Descrição", type: "textarea", placeholder: "Descrição da loja", width: "full" },
-        { key: "website", label: "Website", type: "text", placeholder: "https://www.exemplo.com.br", width: "half" },
+        {
+          key: "name",
+          label: "Nome",
+          type: "text",
+          required: true,
+          placeholder: "Nome da loja",
+          width: "half",
+        },
+        {
+          key: "description",
+          label: "Descrição",
+          type: "textarea",
+          placeholder: "Descrição da loja",
+          width: "full",
+        },
+        {
+          key: "website",
+          label: "Website",
+          type: "text",
+          placeholder: "https://www.exemplo.com.br",
+          width: "half",
+        },
         {
           key: "openingHours",
           label: "Horário de Funcionamento",
@@ -422,7 +588,13 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           placeholder: "Seg-Sex: 9h às 18h",
           width: "half",
         },
-        { key: "rating", label: "Avaliação", type: "number", placeholder: "0.0", width: "half" },
+        {
+          key: "rating",
+          label: "Avaliação",
+          type: "number",
+          placeholder: "0.0",
+          width: "half",
+        },
         {
           key: "addressId",
           label: "Endereço",
@@ -481,7 +653,14 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       searchFields: ["name", "description"],
       defaultSort: { field: "name", direction: "asc" },
       fields: [
-        { key: "name", label: "Nome", type: "text", required: true, placeholder: "Nome do produto", width: "half" },
+        {
+          key: "name",
+          label: "Nome",
+          type: "text",
+          required: true,
+          placeholder: "Nome do produto",
+          width: "half",
+        },
         {
           key: "description",
           label: "Descrição",
@@ -489,10 +668,35 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           placeholder: "Descrição do produto",
           width: "full",
         },
-        { key: "price", label: "Preço", type: "currency", required: true, placeholder: "0,00", width: "third" },
-        { key: "link", label: "Link", type: "text", placeholder: "https://...", width: "half" },
-        { key: "featured", label: "Destaque", type: "boolean", defaultValue: false, width: "third" },
-        { key: "promotion", label: "Promoção", type: "boolean", defaultValue: false, width: "third" },
+        {
+          key: "price",
+          label: "Preço",
+          type: "currency",
+          required: true,
+          placeholder: "0,00",
+          width: "third",
+        },
+        {
+          key: "link",
+          label: "Link",
+          type: "text",
+          placeholder: "https://...",
+          width: "half",
+        },
+        {
+          key: "featured",
+          label: "Destaque",
+          type: "boolean",
+          defaultValue: false,
+          width: "third",
+        },
+        {
+          key: "promotion",
+          label: "Promoção",
+          type: "boolean",
+          defaultValue: false,
+          width: "third",
+        },
         {
           key: "storeId",
           label: "Loja",
@@ -516,7 +720,10 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           type: "badge",
           badgeConfig: {
             trueValue: { label: "Sim", className: "bg-blue-100 text-blue-800" },
-            falseValue: { label: "Não", className: "bg-gray-100 text-gray-800" },
+            falseValue: {
+              label: "Não",
+              className: "bg-gray-100 text-gray-800",
+            },
           },
         },
         {
@@ -525,7 +732,10 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           type: "badge",
           badgeConfig: {
             trueValue: { label: "Sim", className: "bg-red-100 text-red-800" },
-            falseValue: { label: "Não", className: "bg-gray-100 text-gray-800" },
+            falseValue: {
+              label: "Não",
+              className: "bg-gray-100 text-gray-800",
+            },
           },
         },
       ],
@@ -564,13 +774,55 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       searchFields: ["name", "description", "type"],
       defaultSort: { field: "date", direction: "desc" },
       fields: [
-        { key: "name", label: "Nome", type: "text", required: true, width: "half" },
-        { key: "description", label: "Descrição", type: "textarea", required: true, width: "full" },
-        { key: "date", label: "Data", type: "date", required: true, width: "half" },
-        { key: "type", label: "Tipo", type: "text", required: true, width: "half" },
-        { key: "points", label: "Pontos", type: "number", defaultValue: 0, width: "third" },
-        { key: "totalSpots", label: "Total de Vagas", type: "number", required: true, width: "third" },
-        { key: "filledSpots", label: "Vagas Preenchidas", type: "number", defaultValue: 0, width: "third" },
+        {
+          key: "name",
+          label: "Nome",
+          type: "text",
+          required: true,
+          width: "half",
+        },
+        {
+          key: "description",
+          label: "Descrição",
+          type: "textarea",
+          required: true,
+          width: "full",
+        },
+        {
+          key: "date",
+          label: "Data",
+          type: "date",
+          required: true,
+          width: "half",
+        },
+        {
+          key: "type",
+          label: "Tipo",
+          type: "text",
+          required: true,
+          width: "half",
+        },
+        {
+          key: "points",
+          label: "Pontos",
+          type: "number",
+          defaultValue: 0,
+          width: "third",
+        },
+        {
+          key: "totalSpots",
+          label: "Total de Vagas",
+          type: "number",
+          required: true,
+          width: "third",
+        },
+        {
+          key: "filledSpots",
+          label: "Vagas Preenchidas",
+          type: "number",
+          defaultValue: 0,
+          width: "third",
+        },
         {
           key: "addressId",
           label: "Endereço",
@@ -631,13 +883,17 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     actions: [
       {
         name: "Ver Participantes",
-        endpoint: buildApiUrl(`${API_CONFIG.ENDPOINTS.EVENTS}/{id}/participants`),
+        endpoint: buildApiUrl(
+          `${API_CONFIG.ENDPOINTS.EVENTS}/{id}/participants`
+        ),
         method: "GET",
         icon: "Users",
       },
       {
         name: "Enviar Lembrete",
-        endpoint: buildApiUrl(`${API_CONFIG.ENDPOINTS.EVENTS}/{id}/send-reminder`),
+        endpoint: buildApiUrl(
+          `${API_CONFIG.ENDPOINTS.EVENTS}/{id}/send-reminder`
+        ),
         method: "POST",
         requiresConfirmation: true,
         confirmationMessage: "Enviar lembrete para todos os participantes?",
@@ -747,7 +1003,13 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
             { value: "REMOVE", label: "Remover" },
           ],
         },
-        { key: "value", label: "Valor", type: "number", required: true, width: "third" },
+        {
+          key: "value",
+          label: "Valor",
+          type: "number",
+          required: true,
+          width: "third",
+        },
         {
           key: "source",
           label: "Fonte",
@@ -785,8 +1047,14 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           label: "Operação",
           type: "badge",
           badgeConfig: {
-            trueValue: { label: "Adicionar", className: "bg-green-100 text-green-800" },
-            falseValue: { label: "Remover", className: "bg-red-100 text-red-800" },
+            trueValue: {
+              label: "Adicionar",
+              className: "bg-green-100 text-green-800",
+            },
+            falseValue: {
+              label: "Remover",
+              className: "bg-red-100 text-red-800",
+            },
           },
         },
         { key: "value", label: "Valor", sortable: true },
@@ -822,7 +1090,14 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       searchFields: ["name", "description"],
       defaultSort: { field: "name", direction: "asc" },
       fields: [
-        { key: "name", label: "Nome", type: "text", required: true, placeholder: "Nome do workshop", width: "half" },
+        {
+          key: "name",
+          label: "Nome",
+          type: "text",
+          required: true,
+          placeholder: "Nome do workshop",
+          width: "half",
+        },
         {
           key: "description",
           label: "Descrição",
@@ -831,8 +1106,21 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           placeholder: "Descrição do workshop",
           width: "full",
         },
-        { key: "duration", label: "Duração", type: "text", required: true, placeholder: "Ex: 2 horas", width: "third" },
-        { key: "points", label: "Pontos", type: "number", required: true, width: "third" },
+        {
+          key: "duration",
+          label: "Duração",
+          type: "text",
+          required: true,
+          placeholder: "Ex: 2 horas",
+          width: "third",
+        },
+        {
+          key: "points",
+          label: "Pontos",
+          type: "number",
+          required: true,
+          width: "third",
+        },
         {
           key: "type",
           label: "Tipo",
@@ -899,7 +1187,14 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       searchFields: ["name", "content"],
       defaultSort: { field: "name", direction: "asc" },
       fields: [
-        { key: "name", label: "Nome", type: "text", required: true, placeholder: "Nome do módulo", width: "half" },
+        {
+          key: "name",
+          label: "Nome",
+          type: "text",
+          required: true,
+          placeholder: "Nome do módulo",
+          width: "half",
+        },
         {
           key: "content",
           label: "Conteúdo",
@@ -959,9 +1254,30 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       searchFields: ["name", "code"],
       defaultSort: { field: "createdAt", direction: "desc" },
       fields: [
-        { key: "name", label: "Nome", type: "text", required: true, placeholder: "Nome do cupom", width: "half" },
-        { key: "code", label: "Código", type: "text", required: true, placeholder: "CUPOM2024", width: "half" },
-        { key: "quantity", label: "Quantidade", type: "number", required: true, placeholder: "100", width: "half" },
+        {
+          key: "name",
+          label: "Nome",
+          type: "text",
+          required: true,
+          placeholder: "Nome do cupom",
+          width: "half",
+        },
+        {
+          key: "code",
+          label: "Código",
+          type: "text",
+          required: true,
+          placeholder: "CUPOM2024",
+          width: "half",
+        },
+        {
+          key: "quantity",
+          label: "Quantidade",
+          type: "number",
+          required: true,
+          placeholder: "100",
+          width: "half",
+        },
       ],
       tableColumns: [
         { key: "name", label: "Nome", sortable: true },
@@ -987,7 +1303,14 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       searchFields: ["name", "profession", "phone", "email"],
       defaultSort: { field: "name", direction: "asc" },
       fields: [
-        { key: "name", label: "Nome", type: "text", required: true, placeholder: "Nome completo", width: "half" },
+        {
+          key: "name",
+          label: "Nome",
+          type: "text",
+          required: true,
+          placeholder: "Nome completo",
+          width: "half",
+        },
         {
           key: "profession",
           label: "Profissão",
@@ -1011,21 +1334,115 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           placeholder: "(00) 00000-0000",
           width: "half",
         },
-        { key: "email", label: "Email", type: "email", placeholder: "email@exemplo.com", width: "half" },
-        { key: "profileImage", label: "Imagem de Perfil", type: "file", width: "full" },
-        { key: "isActive", label: "Ativo", type: "boolean", defaultValue: true, width: "half" },
         {
-          key: "addressId",
-          label: "Endereço",
-          type: "relation",
-          required: true,
+          key: "email",
+          label: "Email",
+          type: "email",
+          placeholder: "email@exemplo.com",
+          width: "half",
+        },
+        {
+          key: "profileImage",
+          label: "Imagem de Perfil",
+          type: "file",
           width: "full",
-          relationConfig: {
-            endpoint: buildApiUrl(API_CONFIG.ENDPOINTS.ADDRESSES),
-            displayField: "fullAddress",
-            valueField: "id",
-            searchFields: ["street", "city", "state"],
-          },
+        },
+
+        // Campos de endereço
+        {
+          key: "address.street",
+          label: "Rua",
+          type: "text",
+          required: true,
+          placeholder: "Rua, número",
+          width: "half",
+        },
+        {
+          key: "address.city",
+          label: "Cidade",
+          type: "text",
+          required: true,
+          placeholder: "Cidade",
+          width: "half",
+        },
+        {
+          key: "address.state",
+          label: "Estado",
+          type: "text",
+          required: true,
+          placeholder: "Estado",
+          width: "half",
+        },
+        {
+          key: "address.zipCode",
+          label: "CEP",
+          type: "cep",
+          required: true,
+          placeholder: "00000-000",
+          width: "half",
+        },
+        {
+          key: "address.district",
+          label: "Bairro",
+          type: "text",
+          required: true,
+          placeholder: "Bairro",
+          width: "half",
+        }, // Mudança aqui
+        {
+          key: "address.complement",
+          label: "Complemento",
+          type: "text",
+          placeholder: "Complemento",
+          width: "half",
+        },
+
+        // Campos de redes sociais
+        {
+          key: "socialMedia.instagram",
+          label: "Instagram",
+          type: "text",
+          placeholder: "https://instagram.com/usuario",
+          width: "third",
+        },
+        {
+          key: "socialMedia.linkedin",
+          label: "LinkedIn",
+          type: "text",
+          placeholder: "https://linkedin.com/in/usuario",
+          width: "third",
+        },
+        {
+          key: "socialMedia.whatsapp",
+          label: "WhatsApp",
+          type: "phone",
+          placeholder: "(00) 00000-0000",
+          width: "third",
+        },
+
+        // Dias disponíveis
+        {
+          key: "availableDays",
+          label: "Dias Disponíveis",
+          type: "multiselect",
+          width: "full",
+          options: [
+            { value: "MONDAY", label: "Segunda-feira" },
+            { value: "TUESDAY", label: "Terça-feira" },
+            { value: "WEDNESDAY", label: "Quarta-feira" },
+            { value: "THURSDAY", label: "Quinta-feira" },
+            { value: "FRIDAY", label: "Sexta-feira" },
+            { value: "SATURDAY", label: "Sábado" },
+            { value: "SUNDAY", label: "Domingo" },
+          ],
+        },
+
+        {
+          key: "isActive",
+          label: "Ativo",
+          type: "boolean",
+          defaultValue: true,
+          width: "half",
         },
       ],
       tableColumns: [
@@ -1033,14 +1450,21 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
         { key: "profession", label: "Profissão", sortable: true },
         { key: "phone", label: "Telefone" },
         { key: "email", label: "Email" },
+        { key: "address.city", label: "Cidade", type: "relation-display" },
         {
           key: "isActive",
           label: "Status",
           type: "badge",
           sortable: true,
           badgeConfig: {
-            trueValue: { label: "Ativo", className: "bg-green-100 text-green-800" },
-            falseValue: { label: "Inativo", className: "bg-gray-100 text-gray-800" },
+            trueValue: {
+              label: "Ativo",
+              className: "bg-green-100 text-green-800",
+            },
+            falseValue: {
+              label: "Inativo",
+              className: "bg-gray-100 text-gray-800",
+            },
           },
         },
       ],
@@ -1053,6 +1477,11 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
         {
           key: "profession",
           label: "Profissão",
+          type: "text",
+        },
+        {
+          key: "address.city",
+          label: "Cidade",
           type: "text",
         },
       ],
@@ -1069,7 +1498,14 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       searchFields: ["name", "contact", "instagram"],
       defaultSort: { field: "name", direction: "asc" },
       fields: [
-        { key: "name", label: "Nome", type: "text", required: true, placeholder: "Nome completo", width: "half" },
+        {
+          key: "name",
+          label: "Nome",
+          type: "text",
+          required: true,
+          placeholder: "Nome completo",
+          width: "half",
+        },
         {
           key: "contact",
           label: "Contato",
@@ -1078,8 +1514,22 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           placeholder: "(00) 00000-0000",
           width: "half",
         },
-        { key: "instagram", label: "Instagram", type: "text", required: true, placeholder: "@usuario", width: "half" },
-        { key: "tiktok", label: "TikTok", type: "text", required: true, placeholder: "@usuario", width: "half" },
+        {
+          key: "instagram",
+          label: "Instagram",
+          type: "text",
+          required: true,
+          placeholder: "@usuario",
+          width: "half",
+        },
+        {
+          key: "tiktok",
+          label: "TikTok",
+          type: "text",
+          required: true,
+          placeholder: "@usuario",
+          width: "half",
+        },
       ],
       tableColumns: [
         { key: "name", label: "Nome", sortable: true },
@@ -1100,7 +1550,14 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       searchFields: ["name", "description"],
       defaultSort: { field: "name", direction: "asc" },
       fields: [
-        { key: "name", label: "Nome", type: "text", required: true, placeholder: "Nome da comunidade", width: "half" },
+        {
+          key: "name",
+          label: "Nome",
+          type: "text",
+          required: true,
+          placeholder: "Nome da comunidade",
+          width: "half",
+        },
         {
           key: "description",
           label: "Descrição",
@@ -1108,8 +1565,22 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           placeholder: "Descrição da comunidade",
           width: "full",
         },
-        { key: "color", label: "Cor", type: "text", required: true, placeholder: "#FF0000", width: "half" },
-        { key: "icon", label: "Ícone", type: "text", required: true, placeholder: "home", width: "half" },
+        {
+          key: "color",
+          label: "Cor",
+          type: "text",
+          required: true,
+          placeholder: "#FF0000",
+          width: "half",
+        },
+        {
+          key: "icon",
+          label: "Ícone",
+          type: "text",
+          required: true,
+          placeholder: "home",
+          width: "half",
+        },
       ],
       tableColumns: [
         { key: "name", label: "Nome", sortable: true },
@@ -1130,7 +1601,14 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       searchFields: ["title", "content"],
       defaultSort: { field: "createdAt", direction: "desc" },
       fields: [
-        { key: "title", label: "Título", type: "text", required: true, placeholder: "Título do post", width: "half" },
+        {
+          key: "title",
+          label: "Título",
+          type: "text",
+          required: true,
+          placeholder: "Título do post",
+          width: "half",
+        },
         {
           key: "content",
           label: "Conteúdo",
@@ -1217,7 +1695,16 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       displayField: "name",
       searchFields: ["name"],
       defaultSort: { field: "name", direction: "asc" },
-      fields: [{ key: "name", label: "Nome", type: "text", required: true, placeholder: "#hashtag", width: "full" }],
+      fields: [
+        {
+          key: "name",
+          label: "Nome",
+          type: "text",
+          required: true,
+          placeholder: "#hashtag",
+          width: "full",
+        },
+      ],
       tableColumns: [{ key: "name", label: "Nome", sortable: true }],
     },
   },
@@ -1398,7 +1885,13 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           placeholder: "Mensagem da notificação",
           width: "full",
         },
-        { key: "isRead", label: "Lida", type: "boolean", defaultValue: false, width: "third" },
+        {
+          key: "isRead",
+          label: "Lida",
+          type: "boolean",
+          defaultValue: false,
+          width: "third",
+        },
         {
           key: "userId",
           label: "Usuário",
@@ -1434,8 +1927,14 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           type: "badge",
           sortable: true,
           badgeConfig: {
-            trueValue: { label: "Lida", className: "bg-green-100 text-green-800" },
-            falseValue: { label: "Não lida", className: "bg-yellow-100 text-yellow-800" },
+            trueValue: {
+              label: "Lida",
+              className: "bg-green-100 text-green-800",
+            },
+            falseValue: {
+              label: "Não lida",
+              className: "bg-yellow-100 text-yellow-800",
+            },
           },
         },
         {
@@ -1482,7 +1981,13 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           placeholder: "Motivo da denúncia",
           width: "half",
         },
-        { key: "description", label: "Descrição", type: "textarea", placeholder: "Descrição detalhada", width: "full" },
+        {
+          key: "description",
+          label: "Descrição",
+          type: "textarea",
+          placeholder: "Descrição detalhada",
+          width: "full",
+        },
         {
           key: "targetId",
           label: "ID do Alvo",
@@ -1552,7 +2057,14 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       searchFields: ["name", "description"],
       defaultSort: { field: "name", direction: "asc" },
       fields: [
-        { key: "name", label: "Nome", type: "text", required: true, placeholder: "Nome da profissão", width: "half" },
+        {
+          key: "name",
+          label: "Nome",
+          type: "text",
+          required: true,
+          placeholder: "Nome da profissão",
+          width: "half",
+        },
         {
           key: "description",
           label: "Descrição",
@@ -1578,9 +2090,27 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       searchFields: ["linkedin", "instagram", "whatsapp"],
       defaultSort: { field: "id", direction: "desc" },
       fields: [
-        { key: "linkedin", label: "LinkedIn", type: "text", placeholder: "URL do LinkedIn", width: "third" },
-        { key: "instagram", label: "Instagram", type: "text", placeholder: "URL do Instagram", width: "third" },
-        { key: "whatsapp", label: "WhatsApp", type: "phone", placeholder: "(00) 00000-0000", width: "third" },
+        {
+          key: "linkedin",
+          label: "LinkedIn",
+          type: "text",
+          placeholder: "URL do LinkedIn",
+          width: "third",
+        },
+        {
+          key: "instagram",
+          label: "Instagram",
+          type: "text",
+          placeholder: "URL do Instagram",
+          width: "third",
+        },
+        {
+          key: "whatsapp",
+          label: "WhatsApp",
+          type: "phone",
+          placeholder: "(00) 00000-0000",
+          width: "third",
+        },
       ],
       tableColumns: [
         { key: "linkedin", label: "LinkedIn" },
@@ -1623,7 +2153,9 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           required: true,
           width: "half",
           relationConfig: {
-            endpoint: buildApiUrl(API_CONFIG.ENDPOINTS.RECOMMENDED_PROFESSIONALS),
+            endpoint: buildApiUrl(
+              API_CONFIG.ENDPOINTS.RECOMMENDED_PROFESSIONALS
+            ),
             displayField: "name",
             valueField: "id",
             searchFields: ["name"],
@@ -1637,7 +2169,9 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           label: "Profissional",
           type: "relation",
           relationConfig: {
-            endpoint: buildApiUrl(API_CONFIG.ENDPOINTS.RECOMMENDED_PROFESSIONALS),
+            endpoint: buildApiUrl(
+              API_CONFIG.ENDPOINTS.RECOMMENDED_PROFESSIONALS
+            ),
             displayField: "name",
           },
         },
@@ -1660,4 +2194,4 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       ],
     },
   },
-}
+};
