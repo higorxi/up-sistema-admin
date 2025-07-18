@@ -89,10 +89,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const MAX_ATTEMPTS = 3
   
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Ler o contador de tentativas do localStorage ou zerar
     let attempts = Number(localStorage.getItem("loginAttempts") || "0")
   
-    if (!allowedAdmins.includes(email)) {
+    const normalizedEmail = email.toLowerCase()
+  
+    if (!allowedAdmins.includes(normalizedEmail)) {
       attempts++
       localStorage.setItem("loginAttempts", attempts.toString())
   
@@ -107,7 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         toast({
           title: "Acesso negado",
-          description: 'Usuário não encontrado ou sem permissão de acesso.',
+          description: "Usuário não encontrado ou sem permissão de acesso.",
           variant: "destructive",
         })
         setIsLoading(false)
@@ -115,7 +116,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
   
-    // Se chegou aqui, email está autorizado, resetar tentativas
     localStorage.removeItem("loginAttempts")
   
     try {
@@ -125,18 +125,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: normalizedEmail, password }),
       })
   
       if (response.ok) {
         const data = await response.json()
   
-        // Armazenar dados no localStorage
         localStorage.setItem("token", data.access_token)
         localStorage.setItem("user", JSON.stringify(data.user))
         localStorage.setItem("role", data.role)
   
-        // Atualizar estado
         setToken(data.access_token)
         setUser(data.user)
         setRole(data.role)
@@ -167,6 +165,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false)
     }
   }
+  
 
   const logout = () => {
     // Limpar localStorage
