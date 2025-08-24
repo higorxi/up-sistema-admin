@@ -63,7 +63,7 @@ const navigationItems = [
         url: "/admin/professionals",
       },
       {
-        title: "Profissionais Indicados",
+        title: "Profissionais Recomendados",
         url: "/admin/recommended-professionals",
       },
       {

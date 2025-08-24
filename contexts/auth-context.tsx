@@ -81,9 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [isAuthenticated, isLoading, pathname, router])
 
   const allowedAdmins = [
-    "roferrazdesigner@gmail.com",
-    "meiresug@gmail.com",
-    "victoorres@icloud.com",
+    "admin@upconnection.app",
   ]
   
   const MAX_ATTEMPTS = 3

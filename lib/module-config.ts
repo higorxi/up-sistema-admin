@@ -157,6 +157,7 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
         get: buildApiUrl(API_CONFIG.ENDPOINTS.USERS), // GET /:id
       },
     },
+    /*
     actions: [
       {
         name: "Atualizar Foto de Perfil",
@@ -179,6 +180,7 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
         icon: "Image",
       },
     ],
+    */
   },
 
   professionals: {
