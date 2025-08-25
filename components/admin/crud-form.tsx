@@ -44,6 +44,7 @@ export function CrudForm({
   onCancel,
 }: CrudFormProps) {
   const [formData, setFormData] = useState<any>({});
+  const [originalData, setOriginalData] = useState<any>({}); // Dados originais para comparação
   const [loading, setLoading] = useState(false);
   const [relationData, setRelationData] = useState<Record<string, any[]>>({});
   const [relationLoading, setRelationLoading] = useState<
@@ -56,6 +57,46 @@ export function CrudForm({
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [activeTab, setActiveTab] = useState("general");
   const { toast } = useToast();
+
+  // Função para verificar se dois valores são diferentes
+  const areValuesDifferent = (original: any, current: any): boolean => {
+    // Tratamento especial para valores nulos/undefined/string vazia
+    const normalizeValue = (val: any) => {
+      if (val === null || val === undefined || val === '') return '';
+      if (typeof val === 'object' && val instanceof Date) return val.toISOString();
+      return val;
+    };
+
+    return normalizeValue(original) !== normalizeValue(current);
+  };
+
+  // Função para obter apenas os campos alterados
+  const getChangedFields = (): any => {
+    if (!initialData) {
+      // Se não há dados iniciais, é uma criação - enviar todos os campos preenchidos
+      const cleanData = { ...formData };
+      Object.keys(cleanData).forEach(key => {
+        if (cleanData[key] === '' || cleanData[key] === null || cleanData[key] === undefined) {
+          delete cleanData[key];
+        }
+      });
+      return transformFormData(cleanData);
+    }
+
+    // Para edição, comparar com dados originais
+    const changedFields: any = {};
+    
+    config.fields.forEach((field) => {
+      const currentValue = formData[field.key];
+      const originalValue = originalData[field.key];
+      
+      if (areValuesDifferent(originalValue, currentValue)) {
+        changedFields[field.key] = currentValue;
+      }
+    });
+
+    return transformFormData(changedFields);
+  };
 
   // Agrupar campos em abas para formulários grandes
   const fieldGroups = config.fields.reduce(
@@ -85,7 +126,9 @@ export function CrudForm({
 
   useEffect(() => {
     if (initialData) {
-      setFormData(initialData);
+      const flattenedData = flattenFormData(initialData);
+      setFormData(flattenedData);
+      setOriginalData(flattenedData); // Armazenar dados originais
     } else {
       const defaultData: any = {};
       config.fields.forEach((field) => {
@@ -99,6 +142,7 @@ export function CrudForm({
         }
       });
       setFormData(defaultData);
+      setOriginalData({}); // Sem dados originais para criação
     }
   }, [initialData, config.fields]);
 
@@ -233,12 +277,25 @@ export function CrudForm({
         : config.endpoint;
       const method = initialData ? "PATCH" : "POST";
 
-      // Transformar os dados antes de enviar
-      const transformedData = transformFormData(formData);
+      // Obter apenas os campos alterados
+      const changedData = getChangedFields();
+
+      // Verificar se há campos alterados para PATCH
+      if (initialData && Object.keys(changedData).length === 0) {
+        toast({
+          title: "Nenhuma alteração",
+          description: "Não há campos alterados para salvar",
+          variant: "default",
+        });
+        setLoading(false);
+        return;
+      }
 
       // Log para debug (remova em produção)
-      console.log("Dados originais:", formData);
-      console.log("Dados transformados:", transformedData);
+      console.log("Método:", method);
+      console.log("Dados originais:", originalData);
+      console.log("Dados atuais:", formData);
+      console.log("Dados a serem enviados:", changedData);
 
       const response = await fetch(url, {
         method,
@@ -246,10 +303,17 @@ export function CrudForm({
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify(transformedData),
+        body: JSON.stringify(changedData),
       });
 
       if (response.ok) {
+        toast({
+          title: "Sucesso",
+          description: initialData 
+            ? `${Object.keys(changedData).length} campo(s) atualizado(s) com sucesso`
+            : "Item criado com sucesso",
+          variant: "default",
+        });
         onSuccess();
       } else {
         const errorData = await response.json();
@@ -266,27 +330,6 @@ export function CrudForm({
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (initialData) {
-      // Transformar dados aninhados em campos com notação de ponto para o formulário
-      const flattenedData = flattenFormData(initialData);
-      setFormData(flattenedData);
-    } else {
-      const defaultData: any = {};
-      config.fields.forEach((field) => {
-        if (field.type === "boolean") {
-          defaultData[field.key] =
-            field.defaultValue !== undefined ? field.defaultValue : false;
-        } else if (field.defaultValue !== undefined) {
-          defaultData[field.key] = field.defaultValue;
-        } else {
-          defaultData[field.key] = "";
-        }
-      });
-      setFormData(defaultData);
-    }
-  }, [initialData, config.fields]);
 
   const handleBlur = (field: FieldConfig) => {
     setTouched((prev) => ({ ...prev, [field.key]: true }));
@@ -343,6 +386,7 @@ export function CrudForm({
   const renderField = (field: FieldConfig) => {
     const value = formData[field.key] || "";
     const fieldError = touched[field.key] && errors[field.key];
+    const isChanged = initialData && areValuesDifferent(originalData[field.key], value);
 
     switch (field.type) {
       case "textarea":
@@ -351,6 +395,7 @@ export function CrudForm({
             <Label htmlFor={field.key} className="text-connection-light">
               {field.label}
               {field.required && <span className="text-red-400 ml-1">*</span>}
+              {isChanged && <span className="text-connection-accent ml-1">•</span>}
             </Label>
             <Textarea
               id={field.key}
@@ -359,7 +404,10 @@ export function CrudForm({
                 setFormData({ ...formData, [field.key]: e.target.value })
               }
               onBlur={() => handleBlur(field)}
-              className="bg-connection-primary/30 border-connection-primary/50 text-white"
+              className={cn(
+                "bg-connection-primary/30 border-connection-primary/50 text-white",
+                isChanged && "border-connection-accent/50"
+              )}
               placeholder={field.placeholder}
               rows={4}
             />
@@ -379,6 +427,7 @@ export function CrudForm({
               <Label htmlFor={field.key} className="text-connection-light">
                 {field.label}
                 {field.required && <span className="text-red-400 ml-1">*</span>}
+                {isChanged && <span className="text-connection-accent ml-1">•</span>}
               </Label>
               {field.description && (
                 <p className="text-connection-light/50 text-xs">
@@ -402,6 +451,7 @@ export function CrudForm({
             <Label htmlFor={field.key} className="text-connection-light">
               {field.label}
               {field.required && <span className="text-red-400 ml-1">*</span>}
+              {isChanged && <span className="text-connection-accent ml-1">•</span>}
             </Label>
             <Select
               value={value.toString()}
@@ -409,7 +459,10 @@ export function CrudForm({
                 setFormData({ ...formData, [field.key]: newValue })
               }
             >
-              <SelectTrigger className="bg-connection-primary/30 border-connection-primary/50 text-white">
+              <SelectTrigger className={cn(
+                "bg-connection-primary/30 border-connection-primary/50 text-white",
+                isChanged && "border-connection-accent/50"
+              )}>
                 <SelectValue
                   placeholder={field.placeholder || "Selecione..."}
                 />
@@ -441,6 +494,7 @@ export function CrudForm({
             <Label htmlFor={field.key} className="text-connection-light">
               {field.label}
               {field.required && <span className="text-red-400 ml-1">*</span>}
+              {isChanged && <span className="text-connection-accent ml-1">•</span>}
             </Label>
             <Popover>
               <PopoverTrigger asChild>
@@ -448,7 +502,8 @@ export function CrudForm({
                   variant="outline"
                   className={cn(
                     "w-full justify-start text-left font-normal bg-connection-primary/30 border-connection-primary/50 text-white",
-                    !value && "text-connection-light/50"
+                    !value && "text-connection-light/50",
+                    isChanged && "border-connection-accent/50"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
@@ -491,13 +546,17 @@ export function CrudForm({
             <Label htmlFor={field.key} className="text-connection-light">
               {field.label}
               {field.required && <span className="text-red-400 ml-1">*</span>}
+              {isChanged && <span className="text-connection-accent ml-1">•</span>}
             </Label>
             <div className="relative">
               <Input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => handleRelationSearch(field, e.target.value)}
-                className="bg-connection-primary/30 border-connection-primary/50 text-white pr-8"
+                className={cn(
+                  "bg-connection-primary/30 border-connection-primary/50 text-white pr-8",
+                  isChanged && "border-connection-accent/50"
+                )}
                 placeholder={`Buscar ${field.label.toLowerCase()}...`}
               />
               {isLoading ? (
@@ -554,7 +613,10 @@ export function CrudForm({
         if (!field.fields) return null;
         return (
           <div className="space-y-4 border border-connection-primary/50 p-4 rounded-md">
-            <h3 className="text-connection-light font-medium">{field.label}</h3>
+            <h3 className="text-connection-light font-medium">
+              {field.label}
+              {isChanged && <span className="text-connection-accent ml-1">•</span>}
+            </h3>
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
               {field.fields.map((subField) => (
                 <div key={subField.key} className="space-y-2">
@@ -595,6 +657,7 @@ export function CrudForm({
             <Label htmlFor={field.key} className="text-connection-light">
               {field.label}
               {field.required && <span className="text-red-400 ml-1">*</span>}
+              {isChanged && <span className="text-connection-accent ml-1">•</span>}
             </Label>
             <Input
               id={field.key}
@@ -611,7 +674,10 @@ export function CrudForm({
                 setFormData({ ...formData, [field.key]: e.target.value })
               }
               onBlur={() => handleBlur(field)}
-              className="bg-connection-primary/30 border-connection-primary/50 text-white"
+              className={cn(
+                "bg-connection-primary/30 border-connection-primary/50 text-white",
+                isChanged && "border-connection-accent/50"
+              )}
               placeholder={field.placeholder}
               required={field.required}
             />
@@ -625,6 +691,9 @@ export function CrudForm({
         );
     }
   };
+
+  // Verificar se há campos alterados
+  const hasChanges = initialData ? Object.keys(getChangedFields()).length > 0 : true;
 
   // Verificar se precisamos de abas (mais de um grupo ou muitos campos)
   const needsTabs =
@@ -693,29 +762,42 @@ export function CrudForm({
         </div>
       </ScrollArea>
 
-      <div className="flex justify-end space-x-2 pt-4 mt-4 border-t border-connection-primary/50">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onCancel}
-          className="border-connection-light/20 text-connection-light hover:bg-connection-secondary hover:text-white"
-        >
-          Cancelar
-        </Button>
-        <Button
-          type="submit"
-          disabled={loading}
-          className="bg-connection-accent hover:bg-connection-accent/80"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Salvando...
-            </>
-          ) : (
-            "Salvar"
-          )}
-        </Button>
+      <div className="flex justify-between items-center pt-4 mt-4 border-t border-connection-primary/50">
+        {initialData && (
+          <div className="text-sm text-connection-light/50">
+            {hasChanges ? (
+              <span className="text-connection-accent">
+                • {Object.keys(getChangedFields()).length} campo(s) alterado(s)
+              </span>
+            ) : (
+              "Nenhuma alteração"
+            )}
+          </div>
+        )}
+        <div className="flex space-x-2 ml-auto">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            className="border-connection-light/20 text-connection-light hover:bg-connection-secondary hover:text-white"
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="submit"
+            disabled={loading || (initialData && !hasChanges)}
+            className="bg-connection-accent hover:bg-connection-accent/80 disabled:opacity-50"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Salvando...
+              </>
+            ) : (
+              "Salvar"
+            )}
+          </Button>
+        </div>
       </div>
     </form>
   );

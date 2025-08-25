@@ -369,7 +369,7 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     path: "/admin/partner-suppliers",
     crudConfig: {
       name: "Fornecedores Parceiros",
-      endpoint: buildApiUrl(API_CONFIG.ENDPOINTS.PARTNER_SUPPLIERS),
+      endpoint: buildApiUrl(API_CONFIG.ENDPOINTS.PARTNER_SUPPLIERS_PENDING),
       displayField: "tradeName",
       searchFields: ["tradeName", "companyName", "document"],
       defaultSort: { field: "tradeName", direction: "asc" },

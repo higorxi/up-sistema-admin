@@ -7,6 +7,7 @@ export const API_CONFIG = {
     USERS: "/users",
     PROFESSIONALS: "/professionals",
     PARTNER_SUPPLIERS: "/partner-suppliers",
+    PARTNER_SUPPLIERS_PENDING: "/partner-suppliers/pending",
     LOVE_DECORATIONS: "/love-decorations",
     ADDRESSES: "/addresses",
     STORES: "/stores",
