@@ -333,6 +333,7 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       ],
     },
     actions: [
+      /*
       {
         name: "Adicionar Pontos",
         endpoint: buildApiUrl(
@@ -348,6 +349,7 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
         errorMessage: "Erro ao adicionar pontos",
         icon: "Plus",
       },
+      */
       {
         name: "Verificar Profissional",
         endpoint: buildApiUrl(
@@ -369,13 +371,13 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     path: "/admin/partner-suppliers",
     crudConfig: {
       name: "Fornecedores Parceiros",
-      endpoint: buildApiUrl(API_CONFIG.ENDPOINTS.PARTNER_SUPPLIERS_PENDING),
+      endpoint: buildApiUrl(API_CONFIG.ENDPOINTS.ADMIN_PARTNER_SUPPLIERS_PENDING),
       displayField: "tradeName",
       searchFields: ["tradeName", "companyName", "document"],
       defaultSort: { field: "tradeName", direction: "asc" },
       fields: [
         {
-          key: "tradeName",
+          key: "partnerSupplier.tradeName",
           label: "Nome Fantasia",
           type: "text",
           required: true,
@@ -383,7 +385,7 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           width: "half",
         },
         {
-          key: "companyName",
+          key: "partnerSupplier.companyName",
           label: "Razão Social",
           type: "text",
           required: true,
@@ -391,7 +393,7 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           width: "half",
         },
         {
-          key: "document",
+          key: "partnerSupplier.document",
           label: "CNPJ",
           type: "cnpj",
           required: true,
@@ -399,25 +401,111 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           width: "half",
         },
         {
-          key: "stateRegistration",
+          key: "partnerSupplier.stateRegistration",
           label: "Inscrição Estadual",
           type: "text",
           placeholder: "Inscrição estadual",
           width: "half",
         },
         {
-          key: "contact",
+          key: "partnerSupplier.contact",
           label: "Contato",
           type: "phone",
           placeholder: "(00) 00000-0000",
           width: "half",
         },
         {
-          key: "accessPending",
+          key: "partnerSupplier.profileImage",
+          label: "Imagem de Perfil",
+          type: "text",
+          placeholder: "URL da imagem",
+          width: "half",
+        },
+        {
+          key: "partnerSupplier.accessPending",
           label: "Acesso Pendente",
           type: "boolean",
           defaultValue: true,
+          width: "full",
+        },
+
+        // User fields
+        {
+          key: "user.email",
+          label: "Email do Usuário",
+          type: "email",
+          required: true,
+          placeholder: "email@exemplo.com",
           width: "half",
+        },
+        {
+          key: "user.password",
+          label: "Senha",
+          type: "password",
+          required: true,
+          placeholder: "********",
+          width: "half",
+        },
+        {
+          key: "user.profileImage",
+          label: "Imagem de Perfil do Usuário",
+          type: "text",
+          placeholder: "URL da imagem",
+          width: "full",
+        },
+
+        // Address fields (nested under user)
+        {
+          key: "user.address.state",
+          label: "Estado",
+          type: "text",
+          required: true,
+          placeholder: "Ex: SP",
+          width: "third",
+        },
+        {
+          key: "user.address.city",
+          label: "Cidade",
+          type: "text",
+          required: true,
+          placeholder: "Ex: São Paulo",
+          width: "third",
+        },
+        {
+          key: "user.address.district",
+          label: "Bairro",
+          type: "text",
+          required: true,
+          placeholder: "Ex: Centro",
+          width: "third",
+        },
+        {
+          key: "user.address.street",
+          label: "Rua",
+          type: "text",
+          placeholder: "Nome da rua",
+          width: "half",
+        },
+        {
+          key: "user.address.number",
+          label: "Número",
+          type: "text",
+          placeholder: "123",
+          width: "third",
+        },
+        {
+          key: "user.address.complement",
+          label: "Complemento",
+          type: "text",
+          placeholder: "Apto 45",
+          width: "third",
+        },
+        {
+          key: "user.address.zipCode",
+          label: "CEP",
+          type: "text",
+          placeholder: "00000-000",
+          width: "third",
         },
       ],
       tableColumns: [
@@ -450,6 +538,42 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           type: "boolean",
         },
       ],
+      // Custom endpoints to handle the nested structure
+      customEndpoints: {
+        create: buildApiUrl(
+          `${API_CONFIG.ENDPOINTS.PARTNER_SUPPLIERS}/register`
+        ), // POST with nested data
+        update: buildApiUrl(API_CONFIG.ENDPOINTS.PARTNER_SUPPLIERS), // PATCH /:id (only partner supplier data)
+        delete: buildApiUrl(API_CONFIG.ENDPOINTS.PARTNER_SUPPLIERS), // DELETE /:id
+        list: buildApiUrl(API_CONFIG.ENDPOINTS.ADMIN_PARTNER_SUPPLIERS_PENDING), // GET /
+        get: buildApiUrl(API_CONFIG.ENDPOINTS.PARTNER_SUPPLIERS), // GET /:id
+      },
+      // Estrutura para transformar os dados do formulário
+      submitStructure: {
+        partnerSupplier: [
+          "partnerSupplier.tradeName",
+          "partnerSupplier.companyName",
+          "partnerSupplier.document",
+          "partnerSupplier.stateRegistration",
+          "partnerSupplier.contact",
+          "partnerSupplier.profileImage",
+          "partnerSupplier.accessPending",
+        ],
+        user: {
+          email: "user.email",
+          password: "user.password",
+          profileImage: "user.profileImage",
+          address: [
+            "user.address.state",
+            "user.address.city",
+            "user.address.district",
+            "user.address.street",
+            "user.address.number",
+            "user.address.complement",
+            "user.address.zipCode",
+          ],
+        },
+      },
     },
     actions: [
       {

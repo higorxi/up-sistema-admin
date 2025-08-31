@@ -1,13 +1,12 @@
 import { API_BASE_URL } from "@/utils/api"
 
-// Atualizar a configuração da API para corresponder ao backend NestJS
 export const API_CONFIG = {
   BASE_URL: API_BASE_URL,
   ENDPOINTS: {
     USERS: "/users",
     PROFESSIONALS: "/professionals",
     PARTNER_SUPPLIERS: "/partner-suppliers",
-    PARTNER_SUPPLIERS_PENDING: "/partner-suppliers/pending",
+    ADMIN_PARTNER_SUPPLIERS_PENDING: "/admin/partner-suppliers/pending",
     LOVE_DECORATIONS: "/love-decorations",
     ADDRESSES: "/addresses",
     STORES: "/stores",
