@@ -544,7 +544,7 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
           `${API_CONFIG.ENDPOINTS.PARTNER_SUPPLIERS}/register`
         ), // POST with nested data
         update: buildApiUrl(API_CONFIG.ENDPOINTS.PARTNER_SUPPLIERS), // PATCH /:id (only partner supplier data)
-        delete: buildApiUrl(API_CONFIG.ENDPOINTS.PARTNER_SUPPLIERS), // DELETE /:id
+        delete: buildApiUrl(API_CONFIG.ENDPOINTS.ADMIN_PARTNER_SUPPLIERS), // DELETE /:id
         list: buildApiUrl(API_CONFIG.ENDPOINTS.ADMIN_PARTNER_SUPPLIERS_PENDING), // GET /
         get: buildApiUrl(API_CONFIG.ENDPOINTS.PARTNER_SUPPLIERS), // GET /:id
       },
@@ -579,7 +579,7 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       {
         name: "Aprovar Acesso",
         endpoint: buildApiUrl(
-          `${API_CONFIG.ENDPOINTS.PARTNER_SUPPLIERS}/pending/{id}`
+          `${API_CONFIG.ENDPOINTS.ADMIN_PARTNER_SUPPLIERS}/pending/{id}`
         ),
         method: "PUT",
         requiresConfirmation: true,
